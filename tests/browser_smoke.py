@@ -28,9 +28,20 @@ def main():
                 page = browser.new_page(viewport={"width": 1280, "height": 1000})
                 errors = []
                 page.on("pageerror", lambda error: errors.append(str(error)))
+                page.route("https://tile.openstreetmap.org/**", lambda route: route.abort())
                 page.goto(f"http://127.0.0.1:{server.server_port}/example-tool/")
                 page.locator("#explore").wait_for()
+                page.locator("#tile-notice").wait_for()
+                page.unroute("https://tile.openstreetmap.org/**")
+                tile = '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#cadfc9"/></svg>'
+                page.route("https://tile.openstreetmap.org/**", lambda route: route.fulfill(content_type="image/svg+xml", body=tile))
+                page.locator("#retry-tiles").click()
+                page.wait_for_selector("img.leaflet-tile-loaded")
+                assert page.locator("#tile-notice").is_hidden()
                 assert page.locator("#projectlink").is_visible()
+                assert page.locator("#junction-map path.leaflet-interactive").count() >= 100
+                assert page.locator("#first").input_value() in page.locator("#junction-location").inner_text()
+                page.locator("#fit-junctions").click()
                 page.locator("#second").select_option("Casualty crashes")
                 assert page.locator("#history tbody tr").count() >= 5
                 page.locator("#turnexample").click()

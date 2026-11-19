@@ -3,7 +3,7 @@
 Compare ICBC crash counts at Langley intersections before and after documented road work. [Open the tool](https://coolcode.ca/crossingrecord/).
 
 <!-- coolcode:guide -->
-Choose a Langley junction and compare annual averages on either side of a reference year. Douglas Crescent at 203 Street and 56 Avenue at 201A Street have linked, completed city projects. The project year is excluded from both periods. Counts represent crashes reported to ICBC, and the view shows how many years support each average.
+Select a dot on the junction map or search by road name. Choose a Langley junction and compare annual averages on either side of a reference year. Douglas Crescent at 203 Street and 56 Avenue at 201A Street have linked, completed city projects. The project year is excluded from both periods. Counts represent crashes reported to ICBC, and the view shows how many years support each average.
 <!-- /coolcode:guide -->
 
 ## Sources and interpretation
@@ -16,7 +16,7 @@ The collector extracts ICBC’s public Hyper table from its official packaged Ta
 
 ## Data and maintenance
 
-The page reports the retrieval date in UTC separately from the periods of observation. The offline build uses the last validated snapshot committed in `web/data/edition.json`. The monthly Actions workflow also supports manual runs. A failed refresh exits before replacing the published edition. All filtering runs in the browser. The page downloads the edition from CoolCode and stores no selections.
+The page reports the retrieval date in UTC separately from the periods of observation. The offline build uses the last validated snapshot committed in `web/data/edition.json`. The monthly Actions workflow also supports manual runs. A failed refresh exits before replacing the published edition. Each dot retains a distinct latitude and longitude from the same workbook, matched on the complete junction label. Two labels in the 2021–2025 edition each have two published locations. Both dots select the same historical series. Counts apply to the label, without implying individual crashes occurred at a dot. All filtering runs in the browser. OpenStreetMap receives street-tile requests for the displayed area. Leaflet is bundled under the licence in web/vendor. The page downloads the edition from CoolCode and stores no selections.
 
 Run `python3 scripts/refresh.py` to rebuild the data from source. Install the official Hyper reader with python3 -m pip install -r scripts/requirements.txt first.
 

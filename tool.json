@@ -1,7 +1,7 @@
 {
   "id": "crossingrecord",
   "title": "Crossing Record",
-  "description": "Compare ICBC crash counts at Langley intersections before and after documented road work.",
+  "description": "Map Langley junctions and compare ICBC crash counts before and after documented road work.",
   "category": "explorers",
   "tags": [
     "langley",
@@ -15,7 +15,7 @@
   "access": "browser",
   "data_info": {
     "mode": "snapshot",
-    "detail": "ICBC crash records are grouped by named junction and year, with Langley City project records for selected locations.",
+    "detail": "ICBC supplies approximate junction coordinates and yearly crash counts. Langley City project records identify selected road improvements.",
     "cadence": "Monthly",
     "probes": [
       {
