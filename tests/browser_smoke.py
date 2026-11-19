@@ -24,27 +24,28 @@ def main():
         threading.Thread(target=server.serve_forever, daemon=True).start()
         try:
             with sync_playwright() as p:
-                browser = p.chromium.launch()
+                browser = p.chromium.launch(executable_path=__import__("os").environ.get("CHROMIUM_PATH"))
                 page = browser.new_page(viewport={"width": 1280, "height": 1000})
                 errors = []
                 page.on("pageerror", lambda error: errors.append(str(error)))
                 page.goto(f"http://127.0.0.1:{server.server_port}/example-tool/")
-                page.locator("#sample").click()
-                assert page.locator("#output").input_value() == "Halifax\nLangley\nVancouver"
-                assert "1 duplicate removed" in page.locator("#status").inner_text()
-                page.locator("#input").fill('<img src=x onerror="alert(1)">\n<img src=x onerror="alert(1)">')
-                assert page.locator("#output").input_value() == '<img src=x onerror="alert(1)">'
-                assert page.locator("img").count() == 0
-                page.locator("#clear").click()
-                assert page.locator("#output").input_value() == ""
-                page.locator("#sample").click()
+                page.locator("#explore").wait_for()
+                assert page.locator("#projectlink").is_visible()
+                page.locator("#second").select_option("Casualty crashes")
+                assert page.locator("#history tbody tr").count() >= 5
+                page.locator("#turnexample").click()
+                assert "203 pedestrians" in page.locator("#turns").inner_text()
+                page.locator("#search").fill("xyz-nothing")
+                assert "No matching" in page.locator("#finding").inner_text()
+                page.locator("#search").fill("201A ST")
+                assert page.locator("#first option").count() >= 1
                 page.screenshot(path=str(screenshots / "desktop.png"), full_page=True)
                 page.set_viewport_size({"width": 390, "height": 844})
                 assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
                 page.screenshot(path=str(screenshots / "mobile.png"), full_page=True)
                 assert not errors, errors
                 browser.close()
-            print("Browser checks passed: project subpath, sample, clear, safe text and mobile layout")
+            print("Browser checks passed: project subpath, data, filters and mobile layout")
         finally:
             server.shutdown()
 

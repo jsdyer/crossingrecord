@@ -1,16 +1,46 @@
 {
-  "id": "coolcode-tool-template",
-  "title": "CoolCode Tool Starter",
-  "description": "A browser-only example that trims lines and removes exact duplicates.",
-  "category": "security",
-  "tags": ["text", "lines", "duplicates"],
-  "icon": "scan-search",
-  "url": "/coolcode-tool-template/",
-  "source": "https://github.com/jsdyer/coolcode-tool-template",
+  "id": "crossingrecord",
+  "title": "Crossing Record",
+  "description": "Compare ICBC crash counts at Langley intersections before and after documented road work.",
+  "category": "explorers",
+  "tags": [
+    "langley",
+    "roads",
+    "crashes"
+  ],
+  "icon": "signpost-big",
+  "url": "/crossingrecord/",
+  "source": "https://github.com/jsdyer/crossingrecord",
   "hosting": "project",
   "access": "browser",
   "data_info": {
-    "mode": "local",
-    "detail": "The browser reads the text you paste and compares its lines."
+    "mode": "snapshot",
+    "detail": "ICBC crash records are grouped by named junction and year, with Langley City project records for selected locations.",
+    "cadence": "Monthly",
+    "probes": [
+      {
+        "label": "Data retrieved",
+        "url": "https://coolcode.ca/crossingrecord/data/edition.json",
+        "path": [
+          "retrieved"
+        ],
+        "count_at": {
+          "path": [
+            "count"
+          ],
+          "unit": "junctions"
+        }
+      },
+      {
+        "label": "Coverage",
+        "url": "https://coolcode.ca/crossingrecord/data/edition.json",
+        "path": [
+          "start"
+        ],
+        "end_path": [
+          "end"
+        ]
+      }
+    ]
   }
 }
