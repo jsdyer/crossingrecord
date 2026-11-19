@@ -29,9 +29,9 @@ export async function start(setup) {
     const response = await fetch('./data/edition.json');
     if (!response.ok) throw Error('Edition unavailable');
     const edition = await response.json();
+    el('explore').hidden = false;
     setup(edition);
     put('edition', 'Data retrieved ' + edition.retrieved + ' · Coverage ' + edition.start + ' to ' + edition.end);
-    el('explore').hidden = false;
   } catch (err) {
     put('edition', 'The published data could not be loaded. Reload to try again.');
     console.error(err);

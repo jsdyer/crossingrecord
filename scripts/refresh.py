@@ -16,6 +16,27 @@ AND COALESCE("ROAD_LOCATION_DESCRIPTION", '') <> ''
 GROUP BY "ROAD_LOCATION_DESCRIPTION", "DATE_OF_LOSS_YEAR", "CRASH_SEVERITY"
 ORDER BY 1,2,3
 """
+LOCATION_QUERY = """
+SELECT DISTINCT "ROAD_LOCATION_DESCRIPTION", "LATITUDE", "LONGITUDE"
+FROM "Extract"."Extract"
+WHERE "MUNICIPALITY_NAME" = 'LANGLEY' AND "INTERSECTION_CRASH" = 'Y'
+AND COALESCE("ROAD_LOCATION_DESCRIPTION", '') <> ''
+AND "LATITUDE" IS NOT NULL AND "LONGITUDE" IS NOT NULL
+ORDER BY 1,2,3
+"""
+
+
+def source_locations(rows, sites):
+    locations = defaultdict(list)
+    for name, lat, lon in rows:
+        if name not in sites or not (48 < lat < 50 and -124 < lon < -121):
+            raise ValueError("Review Langley junction coordinates")
+        locations[name].append([float(lat), float(lon)])
+    if not locations:
+        raise ValueError("No mapped junctions in ICBC workbook")
+    return locations
+
+
 PROJECTS = {
     "203 ST & 56 AVE & DOUGLAS CRES & TURNING LANE":{
         "year":2024, "text":"Northwest corner rebuilt for pedestrian access, with traffic signal upgrades.",
@@ -56,6 +77,9 @@ def main():
         with HyperProcess(Telemetry.DO_NOT_SEND_USAGE_DATA_TO_TABLEAU,parameters={"use_tcp_port":"auto","log_dir":folder}) as process:
             with Connection(process.endpoint,str(path)) as connection:
                 edition = summarize(connection.execute_list_query(QUERY))
+                edition["locations"] = source_locations(
+                    connection.execute_list_query(LOCATION_QUERY), edition["sites"]
+                )
     publish(edition)
 
 
