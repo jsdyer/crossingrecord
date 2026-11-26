@@ -56,7 +56,9 @@ def main():
                 page.reload()
                 page.wait_for_function("document.querySelector('#value1').textContent.includes('/ year')")
                 assert page.locator("#current-junction").inner_text() == page.locator("#first").input_value()
-                assert page.locator("#value1").bounding_box()["y"] < page.locator("#junction-map").bounding_box()["y"]
+                result_top = page.locator("#value1").bounding_box()["y"]
+                assert 0 <= result_top < 844
+                assert result_top < page.locator("#search").bounding_box()["y"]
                 assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
                 page.screenshot(path=str(screenshots / "mobile.png"), full_page=True)
                 assert not errors, errors
