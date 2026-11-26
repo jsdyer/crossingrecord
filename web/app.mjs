@@ -37,6 +37,7 @@ start(data => {
       put('finding','No matching junction. Try a street number or a shorter road name.'); el('finding').hidden = false;
       return;
     }
+    put('current-junction', site);
     drawMap(site, el('search').value, Array.from(el('first').options, option => option.value));
     put('turns', site === countSite
       ? 'Township engineers counted more than 400 northbound right turns per peak hour and more than 400 eastbound right turns per peak hour in early 2025. They counted 203 pedestrians at the north crosswalk over eight hours. The report gives a threshold for vehicles and a count for pedestrians.'
@@ -49,7 +50,7 @@ start(data => {
       put('label'+(i+1),(i ? 'After ' : 'Before ') + ref + ' · ' + years + (years === 1 ? ' year' : ' years'));
       put('value'+(i+1),mean === null ? 'Unavailable' : mean.toFixed(1) + ' / year');
     });
-    put('finding', 'Average annual ' + measures[idx].toLowerCase() + '. ' +
+    put('finding', 'Average ' + (idx ? 'casualty crashes' : 'reported crashes') + ' per year. ' +
         (project?.year === ref ? 'The comparison excludes the city’s project year.' : 'The reference year is user-selected.'));
     table('history',['Year','Reported crashes','Casualty crashes'],data.years.map((y,i)=>[y,...counts[i]]));
     put('project',project ? project.year + ' · ' + project.text : 'This edition has no documented project for this junction.');

@@ -28,3 +28,8 @@ input,button{font:inherit;padding:10px 8px;border:1px solid #82918d;border-radiu
 #tile-notice{padding:.6rem .85rem;background:#fff3d7;color:#4d3511} #tile-notice button{font:inherit;margin:.2rem .5rem;padding:.25rem .65rem;cursor:pointer}
 
 .record-map{height:clamp(19rem,48vh,31rem);width:100%;isolation:isolate;background:#e9eeeb;border:1px solid #93aaa5}.record-map .leaflet-control-attribution{max-width:85vw;white-space:normal}.map-tools{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1rem}.map-tools p{margin:.45rem 0}.map-tools button{padding:.45rem .7rem}
+
+header .tool-name { font-size: 1rem; font-weight: 650; color: var(--accent); margin-bottom: .4rem; }
+.map-hint { margin: .4rem 0 .7rem; }
+#current-junction { font-size: clamp(1.25rem, 3vw, 1.75rem); }
+[hidden] { display: none !important; }

@@ -48,10 +48,15 @@ def main():
                 assert "203 pedestrians" in page.locator("#turns").inner_text()
                 page.locator("#search").fill("xyz-nothing")
                 assert "No matching" in page.locator("#finding").inner_text()
+                assert page.locator(".metrics").is_hidden()
                 page.locator("#search").fill("201A ST")
                 assert page.locator("#first option").count() >= 1
                 page.screenshot(path=str(screenshots / "desktop.png"), full_page=True)
                 page.set_viewport_size({"width": 390, "height": 844})
+                page.reload()
+                page.wait_for_function("document.querySelector('#value1').textContent.includes('/ year')")
+                assert page.locator("#current-junction").inner_text() == page.locator("#first").input_value()
+                assert page.locator("#value1").bounding_box()["y"] < page.locator("#junction-map").bounding_box()["y"]
                 assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
                 page.screenshot(path=str(screenshots / "mobile.png"), full_page=True)
                 assert not errors, errors
