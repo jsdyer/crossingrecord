@@ -33,3 +33,7 @@ header .tool-name { font-size: 1rem; font-weight: 650; color: var(--accent); mar
 .map-hint { margin: .4rem 0 .7rem; }
 #current-junction { font-size: clamp(1.25rem, 3vw, 1.75rem); }
 [hidden] { display: none !important; }
+
+[hidden]{display:none!important}
+.project-profiles li { margin: 1rem 0; }
+.project-profiles p { margin: .3rem 0; }

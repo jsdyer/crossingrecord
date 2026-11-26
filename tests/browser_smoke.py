@@ -2,6 +2,7 @@
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+import json
 import shutil
 import tempfile
 import threading
@@ -61,6 +62,27 @@ def main():
                 assert result_top < page.locator("#search").bounding_box()["y"]
                 assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
                 page.screenshot(path=str(screenshots / "mobile.png"), full_page=True)
+                data = json.loads((ROOT / "dist/data/edition.json").read_text())
+                for label, profile in data["projectProfiles"].items():
+                    page.goto(f"http://127.0.0.1:{server.server_port}/example-tool/")
+                    page.get_by_role("link", name="Browse crash histories at completed road projects").click()
+                    page.get_by_role("link", name=profile["name"], exact=True).click()
+                    assert page.locator("h1").inner_text() == profile["name"]
+                    page.get_by_role("link", name="Open this junction and matched comparison on the map").click()
+                    page.wait_for_function("document.querySelector('#window').value === 'matched'")
+                    assert page.locator("#first").input_value() == label
+                    assert page.locator("#year").input_value() == str(profile["year"])
+                    annual = {int(y): entry["counts"] for y, entry in data.get("projectArchive", {}).get(label, {}).items()}
+                    annual.update(zip(data["years"], data["sites"][label]))
+                    for i, period in enumerate(([y for y in profile["pairedYears"] if y < profile["year"]],
+                                                [y for y in profile["pairedYears"] if y > profile["year"]]), 1):
+                        mean = sum(annual[y][0] for y in period) / len(period)
+                        assert page.locator(f"#value{i}").inner_text() == f"{mean:.1f} / year"
+                    page.locator("#window").select_option("all")
+                    assert "window=matched" not in page.url
+                    assert "excludes the city’s project year" in page.locator("#finding").inner_text()
+                    page.locator("#profilelink").click()
+                    assert page.locator("h1").inner_text() == profile["name"]
                 assert not errors, errors
                 browser.close()
             print("Browser checks passed: project subpath, data, filters and mobile layout")

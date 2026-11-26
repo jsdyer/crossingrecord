@@ -8,6 +8,8 @@ import shutil
 import tempfile
 from urllib.parse import urlsplit
 
+from junction_profiles import publish as publish_junction_profiles
+
 ROOT = Path(__file__).resolve().parents[1]
 SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 
@@ -51,6 +53,7 @@ def build(root=ROOT):
     with tempfile.TemporaryDirectory(prefix="coolcode-tool-") as temporary:
         stage = Path(temporary) / "site"
         shutil.copytree(web, stage)
+        publish_junction_profiles(stage, "https://coolcode.ca" + tool["url"])
         index = stage / "index.html"
         page = index.read_text(encoding="utf-8")
         for token, key in {"TITLE": "title", "DESCRIPTION": "description", "TOOL_ID": "id", "SOURCE_URL": "source"}.items():

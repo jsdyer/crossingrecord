@@ -6,6 +6,10 @@ Compare ICBC crash counts at Langley intersections before and after documented r
 Select a dot on the junction map or search by road name. Choose a Langley junction and compare annual averages on either side of a reference year. Douglas Crescent at 203 Street and 56 Avenue at 201A Street have linked, completed city projects. The project year is excluded from both periods. Counts represent crashes reported to ICBC, and the view shows how many years support each average.
 <!-- /coolcode:guide -->
 
+## Published junction profiles
+
+[Browse documented road projects](https://coolcode.ca/crossingrecord/junctions/). Each profile links its municipal project record, the exact ICBC junction label and all available annual counts. For the comparison it takes the same number of consecutive complete calendar years immediately before and after the City’s project year. The last complete year is determined by the source retrieval date. Select “Open this junction and matched comparison on the map” to reproduce the chosen dates and junction. “All available years” remains the default when entering the map directly. Pages are regenerated from the checked dataset during publication. When the ICBC workbook rolls forward, its earlier complete years are retained for these matched projects with their original source-check dates. Newer official counts supersede earlier observations for the same year.
+
 ## Sources and interpretation
 
 ICBC assigns approximate locations when a crash report has enough detail. This view uses its Langley municipality field and exact junction labels, including turning lanes where recorded. Boundary records assigned to neighbouring municipalities and reports without a junction name are outside this selection. Zero means the extract has no matching report. A casualty crash is a crash involving injury or death. Traffic volume, construction and reporting can all change across years.

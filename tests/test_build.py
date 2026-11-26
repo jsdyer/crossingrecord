@@ -4,8 +4,13 @@ import shutil
 import sys
 import tempfile
 import unittest
+import xml.etree.ElementTree as ET
+from urllib.parse import urlencode
+from html import unescape
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from build import ROOT, build, metadata
+from junction_profiles import paired_years
+from source_io import previous_project_years
 
 
 class BuildTests(unittest.TestCase):
@@ -33,6 +38,44 @@ class BuildTests(unittest.TestCase):
         self.assertIn('href="./style.css"', page)
         self.assertFalse((self.root / "dist/private.txt").exists())
         self.assertTrue((self.root / "dist/.nojekyll").exists())
+
+    def test_paired_years_require_complete_adjacent_years_on_both_sides(self):
+        self.assertEqual(paired_years([2022, 2023, 2024, 2025, 2026], 2024, "2026-09-15"), [2023, 2025])
+        self.assertEqual(paired_years([2021, 2023, 2024, 2025, 2026], 2024, "2027-01-01"), [2023, 2025])
+        self.assertEqual(paired_years([2023, 2024], 2024, "2026-09-15"), [])
+        self.assertEqual(paired_years([2022, 2023, 2024, 2025, 2026], 2024, "2027-01-01"), [2022, 2023, 2025, 2026])
+
+    def test_project_observations_roll_forward_without_overwriting_revisions(self):
+        old = {"source": "workbook", "projects": {"A": {"year": 2023}}, "years": [2021, 2022, 2023],
+               "sites": {"A": [[0, 0], [4, 2], [8, 3]]}, "retrieved": "2023-11-01"}
+        new = {"source": "workbook", "projects": old["projects"], "years": [2022, 2024]}
+        self.assertEqual(previous_project_years(old, new), {"A": {"2021": {"counts": [0, 0], "retrieved": "2023-11-01"}}})
+        self.assertEqual(previous_project_years(old, {**new, "source": "different"}), {})
+
+    def test_directory_profiles_and_interactive_comparisons_share_exact_source_data(self):
+        build(self.root)
+        site = self.root / "dist"
+        data = json.loads((site / "data/edition.json").read_text())
+        urls = {n.text for n in ET.parse(site / "sitemap.xml").findall(".//{*}loc")}
+        base = "https://coolcode.ca/crossingrecord/"
+        directory = (site / "junctions/index.html").read_text()
+        self.assertIn(base + "junctions/", urls)
+        self.assertIn('href="./junctions/"', (site / "index.html").read_text())
+        self.assertEqual(len(urls), 1 + len(data["projectProfiles"]))
+        self.assertLessEqual(set(data["projectProfiles"]), set(data["projects"]))
+        for label, profile in data["projectProfiles"].items():
+            path = profile["path"]
+            page = unescape((site / path / "index.html").read_text())
+            self.assertIn(f'rel="canonical" href="{base + path}"', page)
+            self.assertIn(base + path, urls)
+            self.assertIn(path.removeprefix("junctions/"), directory)
+            self.assertIn(label, page)
+            self.assertIn(data["projects"][label]["url"], page)
+            self.assertIn(data["source"], page)
+            self.assertIn(urlencode({"junction": label, "year": profile["year"], "window": "matched"}), page)
+            for year, (total, casualty) in zip(data["years"], data["sites"][label]):
+                self.assertIn(f'<th scope="row">{year}</th><td>{total}</td><td>{casualty}</td>', page)
+            self.assertNotIn(profile["year"], profile["pairedYears"])
 
     def test_url_matches_tool_id(self):
         self.edit(url="/different/")
